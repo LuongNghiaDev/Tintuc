@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Link Shield Pro</title>
+    <style>
+        :root {
+            --primary: #2A2F4F;
+            --secondary: #917FB3;
+            --accent: #E5BEEC;
+            --text: #2A2F4F;
+            --bg: #FDE2F3;
+        }
+
+        body {
+            font-family: 'Inter', system-ui;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #FDE2F3 0%, #E5BEEC 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(145, 127, 179, 0.2);
+            outline: none;
+        }
+
+        .domain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .domain-card {
+            padding: 0.8rem 1.2rem;
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .domain-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--secondary);
+        }
+
+        .domain-card.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .advanced-toggle {
+            color: var(--secondary);
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        .result-text {
+            width: 100%;
+            height: 120px;
+            padding: 1rem;
+            border: 2px dashed var(--secondary);
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            resize: none;
+            margin-top: 1rem;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: white;
+        }
+
+        .security-badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(42, 47, 79, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Smart Link Shield Pro</h1>
+            <p>Bảo vệ liên kết của bạn với công nghệ chống spam đa lớp</p>
+        </div>
+
+        <div class="control-panel">
+            <div class="input-group">
+                <label class="input-label">Liên kết đích:</label>
+                <input type="text" class="input-field" id="sourceUrl" 
+                       placeholder="https://offb.info/videos/id/100113880">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Chiến dịch:</label>
+                <select class="input-field" id="campaignType">
+                    <option value="news">Tin tức</option>
+                    <option value="social">Mạng xã hội</option>
+                    <option value="promo">Khuyến mãi</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="input-label">Domain bảo mật:</label>
+            <div class="domain-grid" id="domainContainer">
+                <!-- Dynamic domains will be inserted here -->
+            </div>
+        </div>
+
+        <div class="advanced-toggle" onclick="toggleAdvanced()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Tùy chọn nâng cao
+        </div>
+
+        <div class="input-group" id="advancedSection" style="display: none;">
+            <div class="input-group">
+                <label class="input-label">Mã theo dõi:</label>
+                <input type="text" class="input-field" id="trackingCode" 
+                       placeholder="utm_source=facebook&utm_medium=social">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Domain tùy chỉnh:</label>
+                <input type="text" class="input-field" id="customDomain" 
+                       placeholder="example.com">
+            </div>
+        </div>
+
+        <div class="result-container">
+            <div class="security-badge">🛡️ Bảo mật cấp độ 3</div>
+            <textarea class="result-text" id="output" readonly></textarea>
+            <div class="action-bar">
+                <button class="btn btn-primary" onclick="generateLink()">🛡️ Tạo Link</button>
+                <button class="btn btn-secondary" onclick="copyLink()">📋 Sao chép</button>
+                <button class="btn btn-secondary" onclick="testLink()">🔗 Kiểm tra</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LinkGenerator {
+            constructor() {
+                this.pools = {
+                    news: [
+                        'dailynews.pro', 'infostream.live', 'newshub.vip',
+                        'trendingtoday.xyz', 'viralcontent.club', 'tintuc.com',
+                        'baomoi.info', 'news24h.vn', 'tinmoi.net'
+                    ],
+                    social: [
+                        'facebook.com', 'fb.com', 'connect.social', 
+                        'communityhub.site', 'sharezone.pro', 'm.me',
+                        'socialbridge.live', 'networkhub.xyz'
+                    ],
+                    promo: [
+                        'flashsale.vip', 'dealshock.pro', 'discountzone.club',
+                        'shopping24h.live', 'vouchermania.site', 'khuyenmai.com'
+                    ]
+                };
+                
+                // Định dạng ưu tiên: LUÔN bắt đầu bằng facebook.com/l.php
+                this.urlFormats = [
+                    (domain, target) => this.generateFacebookLink(target), // Format chính
+                    (domain, target) => `https://${domain}/redirect?url=${encodeURIComponent(target)}&${this.randomParams()}`,
+                    (domain, target) => `https://${domain}/out/?${this.randomParams()}&url=${encodeURIComponent(target)}`,
+                    (domain, target) => `https://${domain}/gateway?${this.utmParams()}&redirect=${encodeURIComponent(target)}`,
+                    (domain, target) => this.multiRedirect(target, domain)
+                ];
+                
+                this.lastGeneratedTime = 0;
+                this.firstGeneration = true;
+            }
+            
+            generateFacebookLink(targetUrl) {
+                return `https://www.facebook.com/l.php?u=${encodeURIComponent(targetUrl)}&${this.fbParams()}`;
+            }
+            
+            fbParams() {
+                const params = new URLSearchParams();
+                params.append('h', `A${Math.random().toString(36).substring(2, 10)}`);
+                params.append('__tn__', `${Math.random().toString(36).substring(2)}`);
+                params.append('_nc', Math.random().toString(36).substring(2, 15));
+                params.append('fbclid', `IwAR${Math.random().toString(36).substring(2, 15)}`);
+                return params.toString();
+            }
+            
+            randomParams() {
+                const params = {
+                    _fp: Math.random().toString(36).substring(2, 16),
+                    _rt: Date.now(),
+                    ref: Math.random().toString(36).substring(2, 8),
+                    v: Math.random().toFixed(3)
+                };
+                return new URLSearchParams(params).toString();
+            }
+            
+            utmParams() {
+                const sources = ['facebook', 'twitter', 'google', 'email', 'direct'];
+                const mediums = ['social', 'email', 'cpc', 'organic', 'referral'];
+                return new URLSearchParams({
+                    utm_source: sources[Math.floor(Math.random() * sources.length)],
+                    utm_medium: mediums[Math.floor(Math.random() * mediums.length)],
+                    utm_campaign: `campaign_${Math.random().toString(36).substring(2, 6)}`
+                }).toString();
+            }
+            
+            multiRedirect(targetUrl, domain) {
+                const steps = [
+                    `https://${domain}/preload?${this.randomParams()}`,
+                    `https://${domain}/intermediate?${this.utmParams()}`,
+                    targetUrl
+                ];
+                
+                return steps.reduceRight((acc, curr) => {
+                    return curr.includes('http') ? `${curr}&redirect=${encodeURIComponent(acc)}` : acc;
+                });
+            }
+            
+            init() {
+                const type = document.getElementById('campaignType').value;
+                this.renderDomains(type);
+            }
+
+            renderDomains(type) {
+                const container = document.getElementById('domainContainer');
+                container.innerHTML = this.pools[type].map(domain => `
+                    <div class="domain-card" data-domain="${domain}">
+                        <input type="checkbox" hidden>
+                        ${domain}
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.domain-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        card.classList.toggle('active');
+                    });
+                });
+            }
+            
+            getRandomFormat() {
+                // Lần đầu luôn dùng format facebook.com
+                if (this.firstGeneration) {
+                    this.firstGeneration = false;
+                    return this.urlFormats[0];
+                }
+                
+                // Các lần sau random tất cả format
+                return this.urlFormats[Math.floor(Math.random() * this.urlFormats.length)];
+            }
+            
+            generateLink() {
+                try {
+                    const now = Date.now();
+                    if (now - this.lastGeneratedTime < 3000) {
+                        throw new Error('Vui lòng đợi 3 giây trước khi tạo link mới');
+                    }
+                    this.lastGeneratedTime = now;
+                    
+                    const sourceUrl = document.getElementById('sourceUrl').value;
+                    if (!sourceUrl) throw new Error('Vui lòng nhập URL nguồn');
+                    
+                    const selectedDomains = [...document.querySelectorAll('.domain-card.active')];
+                    if (selectedDomains.length === 0) throw new Error('Vui lòng chọn ít nhất một domain');
+                    
+                    const targetDomain = selectedDomains[Math.floor(Math.random() * selectedDomains.length)].dataset.domain;
+                    const format = this.getRandomFormat();
+                    
+                    const finalUrl = format(targetDomain, sourceUrl);
+                    
+                    document.getElementById('output').value = finalUrl;
+
+                } catch (error) {
+                    alert(`Lỗi: ${error.message}`);
+                }
+            }
+        }
+
+        const linkGenerator = new LinkGenerator();
+
+        // UI Functions
+        function toggleAdvanced() {
+            const section = document.getElementById('advancedSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function generateLink() {
+            linkGenerator.generateLink();
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(document.getElementById('output').value);
+            alert('Đã sao chép vào clipboard!');
+        }
+
+        function testLink() {
+            const link = document.getElementById('output').value;
+            if (link) {
+                // Xoay vòng User-Agent
+                const userAgents = [
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15',
+                    'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36'
+                ];
+                const userAgent = userAgents[Math.floor(Math.random() * userAgents.length)];
+                
+                // Mở link với User-Agent ngẫu nhiên
+                const win = window.open('', '_blank');
+                win.document.write(`
+                    <script>
+                        navigator.__defineGetter__('userAgent', () => "${userAgent}");
+                        location.href="${link}"
+                    <\/script>
+                `);
+                win.document.close();
+            }
+        }
+
+        // Khởi động hệ thống
+        document.getElementById('campaignType').addEventListener('change', () => linkGenerator.init());
+        linkGenerator.init();
+    </script>
+</body>
+</html>
